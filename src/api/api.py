@@ -27,6 +27,28 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/copy-image")
+def copy_image(artifact: schemas.PostCopyImage) -> schemas.PostCopyImageResponse:
+    """
+    API endpoint to copy an image from one registry to another.
+    """
+    try:
+        success = SkopeoClient.copy_image(
+            src_registry=artifact.src_registry,
+            src_image_name=artifact.src_image_name,
+            src_image_tag=artifact.src_image_tag,
+            dst_registry=artifact.dst_registry,
+            dst_image_name=artifact.dst_image_name,
+            dst_image_tag=artifact.dst_image_tag,
+            src_username=artifact.src_username,
+            src_password=artifact.src_password,
+            dst_username=artifact.dst_username,
+            dst_password=artifact.dst_password
+        )
+        return schemas.PostCopyImageResponse(success=success)
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # @app.post("/placeholder")
 # def placeholder(artifact: schemas.PostPlaceholder) -> schemas.PostPlaceholderResponse:
 #     raise HTTPException(status_code=501, detail="Not implemented")
