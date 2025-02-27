@@ -3,13 +3,23 @@ from fastapi.responses import RedirectResponse
 from . import schemas
 from src.skopeo.skopeo import SkopeoClient
 
-app = FastAPI()
+app = FastAPI(
+    title="Artifact Manager API",
+    description="WIP API for managing artifacts using Skopeo.",
+    version="0.1.0",
+    openapi_tags=[
+        {
+            "name": "Artifact Management",
+            "description": "Operations related to artifact management in container registries."
+        }
+    ]
+)
 
 @app.get("/", include_in_schema=False)
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
-@app.post("/image-exists")
+@app.post("/image-exists", tags=["Artifact Management"])
 def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsResponse:
     """
     API endpoint to check if an image with a specific tag exists in a repository.
@@ -27,7 +37,7 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/copy-image")
+@app.post("/copy-image", tags=["Artifact Management"])
 def copy_image(artifact: schemas.PostCopyImage) -> schemas.PostCopyImageResponse:
     """
     API endpoint to copy an image from one registry to another.
