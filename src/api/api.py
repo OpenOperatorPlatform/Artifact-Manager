@@ -22,7 +22,7 @@ def redirect_to_docs():
 @app.post("/image-exists", tags=["Artifact Management"])
 def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsResponse:
     """
-    API endpoint to check if an image with a specific tag exists in a repository.
+    API endpoint to check if a Helm Chart / container image with a specific tag exists in a repository.
     """
     try:
         exists = SkopeoClient.image_exists(
@@ -40,7 +40,7 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
 @app.post("/copy-image", tags=["Artifact Management"])
 def copy_image(artifact: schemas.PostCopyImage) -> schemas.PostCopyImageResponse:
     """
-    API endpoint to copy an image from one registry to another.
+    API endpoint to copy a Helm Chart / container image from one registry to another.
     """
     try:
         success = SkopeoClient.copy_image(
