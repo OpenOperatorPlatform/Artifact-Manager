@@ -37,21 +37,21 @@ class SkopeoClient:
             return True  # If the command succeeds, the image exists
 
         except subprocess.CalledProcessError as e:
-            error_message = e.stderr.strip().lower()  # Normalize error message
+            error_message = e.stderr.strip().lower()
 
-            # **Detect Invalid Credentials**
             if "invalid username/password" in error_message or "unauthorized" in error_message:
                 raise RuntimeError("Authentication failed: Invalid username or password.")
 
-            # **Detect Repository Not Found**
             if "project" in error_message and "not found" in error_message:
                 raise RuntimeError(f"Image '{image_name}' not found in '{registry_url}'.")
 
-            # **Detect Network Issues**
             if "no route to host" in error_message or "connection refused" in error_message:
-                raise RuntimeError("Network error: Unable to reach the registry. Check connectivity.")
+                raise RuntimeError("Network error: Unable to reach the registry.")
 
-            return False  # If it's another error but not fatal, assume the image does not exist
+            if "no such host" in error_message or "name or service not known" in error_message:
+                raise RuntimeError(f"DNS resolution failed: Unable to resolve '{registry_url}'.")
+
+            return False
 
         except json.JSONDecodeError:
             raise RuntimeError("Failed to parse Skopeo output")
