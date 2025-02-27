@@ -5,12 +5,10 @@ from src.skopeo.skopeo import SkopeoClient
 
 app = FastAPI()
 
-# Redirect to the API documentation
 @app.get("/", include_in_schema=False)
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
-# Endpoints
 @app.post("/image-exists")
 def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsResponse:
     """
@@ -19,7 +17,7 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
     try:
         exists = SkopeoClient.image_exists(
             registry_url=artifact.registry_url,
-            repository=artifact.repository,
+            image_name=artifact.image_name,
             image_tag=artifact.image_tag,
             username=artifact.username,
             password=artifact.password
@@ -30,5 +28,5 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
         raise HTTPException(status_code=500, detail=str(e))
 
 # @app.post("/placeholder")
-# def placeholder(artifact: schemas.PostListArtifact) -> schemas.PostListArtifactResponse:
+# def placeholder(artifact: schemas.PostPlaceholder) -> schemas.PostPlaceholderResponse:
 #     raise HTTPException(status_code=501, detail="Not implemented")
