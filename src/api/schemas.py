@@ -1,12 +1,12 @@
 from pydantic import BaseModel
+from typing import List, Optional
 
-class PostCopyArtifact(BaseModel):
-    src_url: str
-    src_image_name: str
-    src_image_tag: str
-    dst_url: str
-    dst_image_name: str
-    dst_image_tag: str
+class PostImageExists(BaseModel):
+    registry_url: str
+    repository: str
+    image_tag: str
+    username: Optional[str] = None
+    password: Optional[str] = None
 
-class PostCopyArtifactResponse(BaseModel):
-    message: str
+class PostImageExistsResponse(BaseModel):
+    exists: bool
