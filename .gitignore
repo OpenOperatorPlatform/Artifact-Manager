@@ -1,4 +1,4 @@
 .venv
-doc/skopeo-docs
+docs/skopeo-docs
 *.sh
 *.pyc
