@@ -10,19 +10,28 @@ app = FastAPI(
     openapi_tags=[
         {
             "name": "Artifact Management",
-            "description": "Operations related to artifact management in container registries."
+            "description": (
+                "Operations related to artifact management in container "
+                "registries."
+            )
         }
     ]
 )
+
 
 @app.get("/", include_in_schema=False)
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
+
 @app.post("/image-exists", tags=["Artifact Management"])
-def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsResponse:
+def image_exists(
+    artifact: schemas.PostImageExists
+) -> schemas.PostImageExistsResponse:
+    # Return type annotation for the endpoint
     """
-    API endpoint to check if a Helm Chart / container image with a specific tag exists in a repository.
+    API endpoint to check if a Helm Chart or container image with a specific
+    tag exists in a repository.
     """
     try:
         exists = SkopeoClient.image_exists(
@@ -36,11 +45,22 @@ def image_exists(artifact: schemas.PostImageExists) -> schemas.PostImageExistsRe
 
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail="Uncategorized error: " + str(e)
+        )
+
 
 @app.post("/copy-image", tags=["Artifact Management"])
-def copy_image(artifact: schemas.PostCopyImage) -> schemas.PostCopyImageResponse:
+def copy_image(
+    artifact: schemas.PostCopyImage
+) -> schemas.PostCopyImageResponse:
     """
-    API endpoint to copy a Helm Chart / container image from one registry to another.
+    API Endpoint to copy a Helm Chart/container image from one registry
+    to another.
     """
     try:
         success = SkopeoClient.copy_image(
@@ -59,6 +79,9 @@ def copy_image(artifact: schemas.PostCopyImage) -> schemas.PostCopyImageResponse
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 # @app.post("/placeholder")
-# def placeholder(artifact: schemas.PostPlaceholder) -> schemas.PostPlaceholderResponse:
+# def placeholder(
+#     artifact: schemas.PostPlaceholder
+# ) -> schemas.PostPlaceholderResponse:
 #     raise HTTPException(status_code=501, detail="Not implemented")
